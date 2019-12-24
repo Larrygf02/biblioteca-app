@@ -14,8 +14,7 @@ class PrestamoLibro extends Component {
 
     state = {
         noResultados: false,
-        busqueda: '',
-        resultado: {}
+        busqueda: ''
     }
     // Buscar alumno por codigo
     buscarAlumno = e => {
@@ -52,14 +51,15 @@ class PrestamoLibro extends Component {
 
     // almacena los datos del alumno para solicitar el libro
     solicitarPrestamo = () => {
-        const suscriptor = this.state.resultado;
+        //const suscriptor = this.state.resultado;
+        const { usuario } = this.props;
         // fecha de alta
-        suscriptor.fecha_solicitud = new Date().toLocaleDateString()
+        usuario.fecha_solicitud = new Date().toLocaleDateString()
         // obtener el libro
-        const libroActualizado = this.props.libro;
+        const libroActualizado = {...this.props.libro} ;
 
         // agregar el suscriptor al libro
-        libroActualizado.prestados.push(suscriptor)
+        libroActualizado.prestados.push(usuario)
 
         // obtener firestore y history
         const { firestore, history } = this.props
@@ -97,6 +97,15 @@ class PrestamoLibro extends Component {
             btnSolicitar = null;
         }
 
+        // mostrar mensaje de error
+        const { noResultados } = this.state
+        let mensajeResultado = ''
+        if (noResultados) {
+            mensajeResultado = <div className="alert alert-danger">No hay resultados para ese codigo</div>
+        }else{
+            mensajeResultado = null;
+        }
+
         return (
             <div className="row">
                 <div className="col-12 mb-4">
@@ -131,6 +140,7 @@ class PrestamoLibro extends Component {
                             {/* Muestra la ficha del alumno */}
                             {fichaAlumno}
                             {btnSolicitar}
+                            {mensajeResultado}
                         </div>
                     </div>
                 </div>
