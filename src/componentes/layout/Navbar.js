@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { compose } from 'redux';
 import { connect } from 'react-redux'
 import { firebaseConnect } from 'react-redux-firebase'
+import PropTypes from 'prop-types'
 
 class Navbar extends Component {
     state = {
@@ -17,10 +18,19 @@ class Navbar extends Component {
             return { usuarioAutenticado: false}
         }
     }
+
+    // cerrar la sesion
+    cerrarSesion = () => {
+        console.log('Desconectando');
+        const { firebase } = this.props;
+        firebase.logout();
+    }
     
 
     
     render() {
+        const { usuarioAutenticado } = this.state;
+        const { auth } = this.props
         return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-primary mb-5">
             <nav className="navbar navbar-light">
@@ -33,22 +43,48 @@ class Navbar extends Component {
             </button>
     
             <div className="collapse navbar-collapse" id="navbarColor01">
+                { usuarioAutenticado ? (
                 <ul className="navbar-nav mr-auto">
-                    <li className="nav-item">
-                        <Link to={'/suscriptores'} className="nav-link">
-                            Suscriptores
-                        </Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to={'/'} className="nav-link">
-                            Libros
-                        </Link>
-                    </li>
-                </ul>
+                     <li className="nav-item">
+                         <Link to={'/suscriptores'} className="nav-link">
+                             Suscriptores
+                         </Link>
+                     </li>
+                     <li className="nav-item">
+                         <Link to={'/'} className="nav-link">
+                             Libros
+                         </Link>
+                     </li>
+                 </ul>
+                ) : null}
+
+                { usuarioAutenticado ? (
+                    <ul className="navbar-nav ml-auto">
+                        <li className="nav-item">
+                            <a href="#!" className="nav-link">
+                                { auth.email }
+                            </a>
+                        </li>
+                        <li className="nav-item">
+                            <button
+                            type="button"
+                            className="btn btn-danger"
+                            onClick={() => this.cerrarSesion()}>
+                                Cerrar Sesión
+                            </button>
+                        </li>
+                    </ul>
+                ): null}
+               
             </div>
         </nav>
         );
     }
+}
+
+Navbar.propType = {
+    firebase: PropTypes.object.isRequired,
+    auth: PropTypes.object.isRequired
 }
 
 export default compose(
