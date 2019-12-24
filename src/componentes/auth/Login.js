@@ -1,11 +1,36 @@
 // rcc -> class Component
 
 import React, { Component } from 'react';
+import { firebaseConnect } from 'react-redux-firebase';
 
 class Login extends Component {
     state = {
         email: '',
         password: ''
+    }
+
+    // extrae los valores del input y los coloca en el estate
+    leerDatos = e => {
+        this.setState({
+            [e.target.name]: e.target.value
+        })
+    }
+
+    // Inicia sesion en firebase
+    iniciarSesion = e => {
+        e.preventDefault()
+        // extraer firebase
+        const { firebase } = this.props
+
+        // extraer el state
+        const { email, password } = this.state
+        console.log(this.state);
+        // autenticar el usuario
+        firebase.login({
+            email,
+            password
+        }).then(resultado => console.log('Inicio Sesion'))
+        .catch (error => console.log('Hubo un error'))
     }
 
     render() {
@@ -18,15 +43,15 @@ class Login extends Component {
                                 <i className="fas fa-lock"></i> {''}
                                 Iniciar sesión
                             </h2>
-                            <form>
+                            <form onSubmit={this.iniciarSesion}>
                                 <div className="form-group">
                                     <label>Email:</label>
                                     <input 
-                                    type="text"
+                                    type="email"
                                     className="form-control"
                                     name="email"
                                     required
-                                    value={this.state.email}
+                                    defaultValue={this.state.email}
                                     onChange={this.leerDatos}/>
                                 </div>
                                 <div className="form-group">
@@ -36,7 +61,7 @@ class Login extends Component {
                                     className="form-control"
                                     name="password"
                                     required
-                                    value={this.state.password}
+                                    defaultValue={this.state.password}
                                     onChange={this.leerDatos}/>
                                 </div>
 
@@ -53,4 +78,4 @@ class Login extends Component {
     }
 }
 
-export default Login;
+export default firebaseConnect()(Login);
