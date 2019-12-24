@@ -3,12 +3,23 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { firestoreConnect } from 'react-redux-firebase'
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
 
 import Spinner from '../layout/Spinner'
 
 
-const Suscriptores = ({suscriptores}) => {
+const Suscriptores = ({suscriptores, firestore}) => {
     if (!suscriptores) return <Spinner></Spinner>
+
+    // Eliminar Suscriptor
+    const eliminarSuscriptor = (id) => {
+        console.log('Eliminando..');
+        firestore.delete({
+            collection: 'suscriptores',
+            doc: id
+        })
+    }
+
     return (
         <div className="row">
             <div className="col-md-12 mb-4">
@@ -46,6 +57,13 @@ const Suscriptores = ({suscriptores}) => {
                                     </i>{' '}
                                         Mas información
                                 </Link>
+                                <button
+                                    type="button"
+                                    className="btn btn-danger btn-block"
+                                    onClick={() => eliminarSuscriptor(suscriptor.id)}>
+                                    <i className="fas fa-trash-alt"></i>{''}
+                                    Eliminar
+                                </button>
                             </td>
                         </tr>
                     ))}
@@ -55,6 +73,10 @@ const Suscriptores = ({suscriptores}) => {
     )
 }
 
+Suscriptores.propTypes = {
+    firestore: PropTypes.object.isRequired,
+    suscriptores: PropTypes.array
+}
 export default compose(
     firestoreConnect([{ collection: 'suscriptores' }]),
     connect((state, props) => ({
