@@ -43,7 +43,7 @@ class EditarLibro extends Component {
         return (
             <div className="row">
             <div className="col-12 mb-4">
-                <Link to={'/libros'} className="btn btn-secondary">
+                <Link to={'/'} className="btn btn-secondary">
                     <i className="fas fa-arrow-circle-left"></i>{''}
                     Volver al listado
                 </Link>

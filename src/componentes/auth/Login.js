@@ -21,7 +21,7 @@ class Login extends Component {
     iniciarSesion = e => {
         e.preventDefault()
         // extraer firebase
-        const { firebase } = this.props
+        const { firebase, history } = this.props
 
         // extraer el state
         const { email, password } = this.state
@@ -30,7 +30,7 @@ class Login extends Component {
         firebase.login({
             email,
             password
-        }).then(resultado => console.log('Inicio Sesion'))
+        }).then(resultado => history.push('/'))
         .catch (error => console.log('Hubo un error'))
     }
 
