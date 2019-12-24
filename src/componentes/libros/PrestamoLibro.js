@@ -46,6 +46,25 @@ class PrestamoLibro extends Component {
         })
     }
 
+    // almacena los datos del alumno para solicitar el libro
+    solicitarPrestamo = () => {
+        const suscriptor = this.state.resultado;
+        // fecha de alta
+        suscriptor.fecha_solicitud = new Date().toLocaleDateString()
+        // obtener el libro
+        const libroActualizado = this.props.libro;
+
+        // agregar el suscriptor al libro
+        libroActualizado.prestados.push(suscriptor)
+
+        // obtener firestore y history
+        const { firestore, history } = this.props
+        firestore.update({
+            collection: 'libros',
+            doc: libroActualizado.id
+        }, libroActualizado).then(history.push('/'))
+    }
+
     // almacenar el codigo en el state
     leerDato = e => {
         this.setState({
