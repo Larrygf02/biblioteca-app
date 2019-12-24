@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import { firestoreConnect } from 'react-redux-firebase'
+import PropTypes from 'prop-types'
 
 class NuevoSuscriptor extends Component {
     state = {
@@ -9,6 +11,26 @@ class NuevoSuscriptor extends Component {
         codigo: ''
     }
 
+    // Agrega un nuevo suscriptor a la base de datos
+    agregarSuscriptor = e => {
+        e.preventDefault()
+        // extraer los valores del state
+        const nuevoSuscriptor = {...this.state}
+        // extraer firestore de props
+        const { firestore } = this.props
+        // guardarlar en la base de datos
+        firestore.add({
+            collection: 'suscriptores'
+        }, nuevoSuscriptor)
+        .then(() => this.props.history.push('/suscriptores'))
+    }
+
+    // extrae los valores del input y los coloca en el estate
+    leerDato = e => {
+        this.setState({
+            [e.target.name]: e.target.value
+        })
+    }
 
     render() {
         return (
@@ -26,7 +48,8 @@ class NuevoSuscriptor extends Component {
                     </h2>
                     <div className="row justify-content-center">
                         <div className="col-md-8 mt-5">
-                            <form>
+                            <form
+                                onSubmit={this.agregarSuscriptor}>
                                 <div className="form-group">
                                     <label>Nombre:</label>
                                     <input 
@@ -54,12 +77,25 @@ class NuevoSuscriptor extends Component {
                                 </div>
 
                                 <div className="form-group">
+                                    <label>Carrera:</label>
+                                    <input 
+                                    type="text"
+                                    className="form-control"
+                                    name="carrera"
+                                    placeholder="Carrera del suscriptor"
+                                    required
+                                    onChange={this.leerDato}
+                                    value={this.state.carrera}
+                                    />
+                                </div>
+
+                                <div className="form-group">
                                     <label>Codigo:</label>
                                     <input 
                                     type="text"
                                     className="form-control"
                                     name="codigo"
-                                    placeholder="Nombre del suscriptor"
+                                    placeholder="Codigo del suscriptor"
                                     required
                                     onChange={this.leerDato}
                                     value={this.state.codigo}
@@ -80,4 +116,8 @@ class NuevoSuscriptor extends Component {
     }
 }
 
-export default NuevoSuscriptor;
+NuevoSuscriptor.propTypes = {
+    firestore: PropTypes.object.isRequired
+}
+
+export default firestoreConnect()( NuevoSuscriptor) ;
