@@ -8,6 +8,20 @@ import PropTypes from 'prop-types'
 import Spinner from '../layout/Spinner'
 
 class MostrarLibro extends Component {
+
+    devolverLibro = id => {
+        const { firestore } = this.props;
+
+        const libroActualizado = {...this.props.libro}
+        // eliminar la persona que esta realizando la devolucion de prestados
+        const prestados = libroActualizado.prestados.filter(elemento => elemento.codigo !== id)
+        libroActualizado.prestados = prestados;
+        // atualizar en firestore
+        firestore.update({
+            collection: 'libros',
+            doc: libroActualizado.id
+        }, libroActualizado)
+    }
     render() {
         // extraer libro
         const { libro } = this.props
@@ -68,6 +82,44 @@ class MostrarLibro extends Component {
                     </p>
 
                     {btnPrestamo}
+
+                    {/* Muestra las personas que tienen el libro */}
+                    <h3 className="my-2">Personas que tienen el libro prestado</h3>
+                    {libro.prestados.map(prestado => (
+                        <div key={prestado.codigo} className="card my-2">
+                            <h4 className="card-header">
+                                {prestado.nombre} {prestado.apellido}
+                            </h4>
+                            <div className="card-body">
+                                <p>
+                                    <span className="font-weight-bold">
+                                        Codigo:
+                                    </span> {''}
+                                    {prestado.codigo}
+                                </p>
+                                <p>
+                                    <span className="font-weight-bold">
+                                        Carrera:
+                                    </span> {''}
+                                    {prestado.carrera}
+                                </p>
+                                <p>
+                                    <span className="font-weight-bold">
+                                        Fecha Solicitud:
+                                    </span> {''}
+                                    {prestado.fecha_solicitud}
+                                </p>
+                            </div>
+                            <div className="card-footer">
+                                <button 
+                                type="button"
+                                className="btn btn-success"
+                                onClick={() => this.devolverLibro(prestado.codigo)}>
+                                    Realizar devolución
+                                </button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         );
