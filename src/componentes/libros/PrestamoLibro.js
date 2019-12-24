@@ -8,6 +8,50 @@ import PropTypes from 'prop-types'
 import Spinner from '../layout/Spinner'
 
 class PrestamoLibro extends Component {
+
+    state = {
+        noResultados: false,
+        busqueda: '',
+        resultado: {}
+    }
+    // Buscar alumno por codigo
+    buscarAlumno = e => {
+        e.preventDefault();
+
+        // obtener el valor a buscar
+        const { busqueda } = this.state
+        // extraer firestore
+        const { firestore } = this.props;
+        // hacer la consulta
+        const collection = firestore.collection('suscriptores')
+        const consulta = collection.where("codigo", "==", busqueda).get()
+        // leer los resultados
+        consulta.then(respuesta => {
+            if (respuesta.empty) {
+                // no hay resultados
+                this.setState({
+                    noResultados: true,
+                    resultado: {}
+                })
+            }else{
+                //si hay resultados
+                const datos = respuesta.docs[0]
+                this.setState({
+                    resultado: datos.data(),
+                    noResultados: false
+                })
+                console.log(datos.data());
+            }
+        })
+    }
+
+    // almacenar el codigo en el state
+    leerDato = e => {
+        this.setState({
+            [e.target.name]: e.target.value
+        })
+    }
+
     render() {
         // Extraer el libro
         const { libro } = this.props
@@ -27,7 +71,8 @@ class PrestamoLibro extends Component {
                     </h2>
                     <div className="row justify-content-center mt-5">
                         <div className="col-m-8">
-                            <form>
+                            <form
+                                onSubmit={this.buscarAlumno}>
                                 <legend className="color-primary text-center">
                                     Buscar el suscriptor por código
                                 </legend>
