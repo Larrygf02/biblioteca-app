@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 import Spinner from '../layout/Spinner'
+import FichaSuscriptor from '../suscriptores/FichaSuscriptor'
 
 class PrestamoLibro extends Component {
 
@@ -56,6 +57,23 @@ class PrestamoLibro extends Component {
         // Extraer el libro
         const { libro } = this.props
         if (!libro) return <Spinner/>
+
+        // extraer los datos del alumno 
+        const { noResultados, resultado } = this.state
+        let fichaAlumno, btnSolicitar;
+        if (resultado.nombre) {
+            fichaAlumno = <FichaSuscriptor
+                            alumno={resultado}></FichaSuscriptor>
+            btnSolicitar = <button type="button"
+                         className="btn btn-success btn-block"
+                         onClick={this.solicitarPrestamo}>
+                             Solicitar Prestamo
+                         </button>
+        }else{
+            fichaAlumno = null;
+            btnSolicitar = null;
+        }
+
         return (
             <div className="row">
                 <div className="col-12 mb-4">
@@ -70,9 +88,10 @@ class PrestamoLibro extends Component {
                         Solicitar Prestamo : { libro.titulo}
                     </h2>
                     <div className="row justify-content-center mt-5">
-                        <div className="col-m-8">
+                        <div className="col-md-8">
                             <form
-                                onSubmit={this.buscarAlumno}>
+                                onSubmit={this.buscarAlumno}
+                                className="mb-4">
                                 <legend className="color-primary text-center">
                                     Buscar el suscriptor por código
                                 </legend>
@@ -86,6 +105,9 @@ class PrestamoLibro extends Component {
                                         className="btn btn-success btn-block"
                                         value="Buscar Alumno"/>
                             </form>
+                            {/* Muestra la ficha del alumno */}
+                            {fichaAlumno}
+                            {btnSolicitar}
                         </div>
                     </div>
                 </div>
